@@ -8,10 +8,7 @@ import time
 import traceback
 # Add to imports
 from utils.spell_checker import check_style_prompt, display_spelling_help, spell_checker
-# In the sidebar where style prompt is handled:
-n
-# Add spelling help to help section
-display_spelling_help()
+
 # ============================================================================
 # ASCII ART BANNER - NANOZILLA
 # ============================================================================
@@ -353,9 +350,21 @@ def main():
             label_visibility="collapsed"
         )
         
+        # SPELL CHECKING - MOVED INSIDE SIDEBAR
         if style_prompt:
             char_count = len(style_prompt)
             st.caption(f"Characters: {char_count}/2000")
+            
+            # Auto spell check
+            corrected_prompt, spelling_issues = check_style_prompt(style_prompt)
+            if corrected_prompt != style_prompt:
+                style_prompt = corrected_prompt
+                # Update the text area
+                st.session_state.auto_corrected_prompt = corrected_prompt
+            
+            # Display spelling issues
+            if spelling_issues:
+                spell_checker.display_spelling_issues(spelling_issues)
         
         st.markdown("---")
         
@@ -400,7 +409,7 @@ def main():
         
         st.markdown("---")
         
-        # Help section
+        # Help section with spell checking help
         with st.expander("ℹ️ HELP & TIPS"):
             st.markdown("""
             **How to use NANozILLA:**
@@ -422,6 +431,9 @@ def main():
             - "watercolor painting with soft pastels"
             - "cyberpunk neon aesthetic at night"
             """)
+            
+            # Add spelling help to help section
+            display_spelling_help()
         
         # System info
         with st.expander("🖥️ SYSTEM INFO"):
@@ -443,20 +455,6 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
     # ========================================================================
     
     display_pixel_divider()
-    if style_prompt:
-    char_count = len(style_prompt)
-    st.caption(f"Characters: {char_count}/2000")
-    
-    # Auto spell check
-    corrected_prompt, spelling_issues = check_style_prompt(style_prompt)
-    if corrected_prompt != style_prompt:
-        style_prompt = corrected_prompt
-        # Update the text area (this requires some Streamlit state management)
-        st.session_state.auto_corrected_prompt = corrected_prompt
-    
-    # Display spelling issues
-    if spelling_issues:
-        spell_checker.display_spelling_issues(spelling_issues)
 
     # Create two columns for before/after
     col1, col2 = st.columns(2)
@@ -679,9 +677,9 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
     footer_html = """
     <div class="status-box" style="text-align: center;">
     ╔════════════════════════════════════════════════════════════════╗
-    ║           🎮 NANOZILLA AI COLORIZER v2.0 - 8BIT EDITION 🎮                ║
-    ║              Powered by Google Gemini & Streamlit                         ║
-    ║           Transform Your Images with AI Magic! ✨                         ║
+    ║           🎮 NANOZILLA AI COLORIZER v2.0 - 8BIT EDITION 🎮    ║
+    ║              Powered by Google Gemini & Streamlit             ║
+    ║           Transform Your Images with AI Magic! ✨            ║
     ╚════════════════════════════════════════════════════════════════╝
     </div>
     """
