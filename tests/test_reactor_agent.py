@@ -4,7 +4,17 @@ import os
 from unittest.mock import Mock, patch, MagicMock
 import io
 from PIL import Image
+import pytest
+import sys
+import os
+from unittest.mock import Mock, patch, MagicMock
+import io
+from PIL import Image
 
+# Add the project root to Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from nanozilla_reactor.core.reactor_agent import ReactorAgent, create_reactor_agent
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
