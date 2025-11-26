@@ -1,4 +1,6 @@
 name: Test NANozILLA Reactor
+permissions:
+  contents: read
 
 on:
   push:
