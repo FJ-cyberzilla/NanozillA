@@ -6,7 +6,12 @@ import io
 from PIL import Image
 import time
 import traceback
-
+# Add to imports
+from utils.spell_checker import check_style_prompt, display_spelling_help, spell_checker
+# In the sidebar where style prompt is handled:
+n
+# Add spelling help to help section
+display_spelling_help()
 # ============================================================================
 # ASCII ART BANNER - NANOZILLA
 # ============================================================================
@@ -438,7 +443,21 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
     # ========================================================================
     
     display_pixel_divider()
+    if style_prompt:
+    char_count = len(style_prompt)
+    st.caption(f"Characters: {char_count}/2000")
     
+    # Auto spell check
+    corrected_prompt, spelling_issues = check_style_prompt(style_prompt)
+    if corrected_prompt != style_prompt:
+        style_prompt = corrected_prompt
+        # Update the text area (this requires some Streamlit state management)
+        st.session_state.auto_corrected_prompt = corrected_prompt
+    
+    # Display spelling issues
+    if spelling_issues:
+        spell_checker.display_spelling_issues(spelling_issues)
+
     # Create two columns for before/after
     col1, col2 = st.columns(2)
     
