@@ -1,10 +1,3 @@
-
----
-
-## 🔧 MODIFIED IMPLEMENTATION WITH API SUPPORT
-
-**Create `core/api_server.py`:**
-```python
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
