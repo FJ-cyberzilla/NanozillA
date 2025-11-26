@@ -1,6 +1,4 @@
 name: Test NANozILLA Reactor
-permissions:
-  contents: read
 
 on:
   push:
@@ -24,6 +22,11 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        pip install pytest pytest-asyncio
+    
+    - name: Install project in development mode
+      run: |
+        pip install -e .
     
     - name: Lint with flake8
       run: |
@@ -33,14 +36,3 @@ jobs:
     - name: Run tests with pytest
       run: |
         python -m pytest tests/ -v --tb=short --disable-warnings
-    
-    - name: Test coverage
-      run: |
-        python -m pytest tests/ --cov=./ --cov-report=xml --disable-warnings
-    
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
