@@ -1,5 +1,5 @@
 # NanozillA
-
+[![CodeQL Advanced](https://github.com/FJ-cyberzilla/NanozillA/actions/workflows/codeql.yml/badge.svg)](https://github.com/FJ-cyberzilla/NanozillA/actions/workflows/codeql.yml)
 
 ---
 
