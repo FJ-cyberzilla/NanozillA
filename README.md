@@ -3,7 +3,7 @@
 
 ---
 
-## 📖 README.md
+##
 
 **Create `README.md`:**
 ```markdown
