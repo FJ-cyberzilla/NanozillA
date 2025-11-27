@@ -14,15 +14,15 @@ from PIL import Image
 # Add the project root to Python path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from nanozilla_reactor.core.reactor_agent import ReactorAgent, create_reactor_agent
+from nanozilla_reactor.core.reactor_agent import reactor_agent, create_reactor_agent
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core.reactor_agent import ReactorAgent, create_reactor_agent
+from core.reactor_agent import reactor_agent, create_reactor_agent
 
 
 class TestReactorAgent:
-    """Test suite for ReactorAgent"""
+    """Test suite for reactor_agent"""
     
     @pytest.fixture
     def mock_settings(self):
@@ -42,7 +42,7 @@ class TestReactorAgent:
         return buffer.getvalue()
     
     def test_initialization_success(self, mock_settings):
-        """Test successful ReactorAgent initialization"""
+        """Test successful reactor_agent,initialization"""
         with patch('core.reactor_agent.genai.Client') as mock_client:
             mock_client.return_value = Mock()
             agent = ReactorAgent()
