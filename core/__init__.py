@@ -1,9 +1,6 @@
-from .reactor_agent import ReactorAgent, create_reactor_agent
-from .image_processor import ImageProcessor, create_image_processor
+"""
+Core components for NANozILLA Reactor
+"""
 
-__all__ = [
-    "ReactorAgent", 
-    "create_reactor_agent",
-    "ImageProcessor", 
-    "create_image_processor"
-]
+# Import components directly to avoid circular imports
+# These are imported in the modules where needed

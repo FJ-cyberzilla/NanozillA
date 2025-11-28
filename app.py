@@ -1,9 +1,8 @@
 import streamlit as st
-from core.reactor_agent import ReactorAgent, create_reactor_agent
-from core.image_processor import ImageProcessor, create_image_processor
+from core.reactor_agent import create_reactor_agent
+from core.image_processor import create_image_processor
 from utils.validators import validate_prompt
 import io
-from PIL import Image
 import time
 import traceback
 # Add to imports
@@ -220,9 +219,11 @@ VINTAGE_CSS = """
 # ============================================================================
 # SESSION STATE MANAGEMENT
 # ============================================================================
+
+
 class SessionStateManager:
     """Manage session state variables"""
-    
+
     @staticmethod
     def initialize():
         """Initialize all session state variables"""
@@ -237,11 +238,11 @@ class SessionStateManager:
             'reactor_agent': None,
             'image_processor': None
         }
-        
+
         for key, value in defaults.items():
             if key not in st.session_state:
                 st.session_state[key] = value
-    
+
     @staticmethod
     def reset():
         """Reset session state"""
@@ -253,9 +254,12 @@ class SessionStateManager:
 # ============================================================================
 # UTILITY FUNCTIONS
 # ============================================================================
+
+
 def display_ascii_banner():
     """Display the ASCII art banner"""
     st.markdown(f"<pre>{ASCII_BANNER}</pre>", unsafe_allow_html=True)
+
 
 def display_stats_panel():
     """Display statistics panel"""
@@ -272,17 +276,20 @@ def display_stats_panel():
     """
     st.markdown(stats_html, unsafe_allow_html=True)
 
+
 def display_pixel_divider():
     """Display pixel art divider"""
     st.markdown(f'<div class="pixel-divider">{PIXEL_DIVIDER}</div>', unsafe_allow_html=True)
+
 
 def initialize_components():
     """Initialize Reactor Agent and Image Processor"""
     if st.session_state.reactor_agent is None:
         st.session_state.reactor_agent = create_reactor_agent()
-    
+
     if st.session_state.image_processor is None:
         st.session_state.image_processor = create_image_processor()
+
 
 # ============================================================================
 # PAGE CONFIGURATION
@@ -300,20 +307,22 @@ st.markdown(VINTAGE_CSS, unsafe_allow_html=True)
 # ============================================================================
 # MAIN APPLICATION
 # ============================================================================
+
+
 def main():
     """Main application logic"""
-    
+
     # Initialize session state
     SessionStateManager.initialize()
     initialize_components()
-    
+
     # Display banner
     display_ascii_banner()
-    
+
     # Display stats
     display_stats_panel()
     display_pixel_divider()
-    
+
     # ========================================================================
     # SIDEBAR CONFIGURATION
     # ========================================================================
@@ -321,7 +330,7 @@ def main():
         st.markdown(f"<pre>{MENU_TOP}</pre>", unsafe_allow_html=True)
         st.markdown("### ⚙️ CONFIGURATION PANEL")
         st.markdown(f"<pre>{MENU_BOTTOM}</pre>", unsafe_allow_html=True)
-        
+
         # File upload section
         st.markdown("#### 📁 FILE UPLOAD")
         uploaded_file = st.file_uploader(
@@ -330,7 +339,7 @@ def main():
             help="Upload a black & white or color image to transform",
             label_visibility="collapsed"
         )
-        
+
         if uploaded_file:
             try:
                 st.success(f"✓ {uploaded_file.name}")
@@ -338,9 +347,9 @@ def main():
             except Exception as e:
                 st.error(f"✗ {str(e)}")
                 uploaded_file = None
-        
+
         st.markdown("---")
-        
+
         # Style prompt section
         st.markdown("#### 🎨 STYLE PROMPT")
         style_prompt = st.text_area(
@@ -349,25 +358,25 @@ def main():
             height=150,
             label_visibility="collapsed"
         )
-        
+
         # SPELL CHECKING - MOVED INSIDE SIDEBAR
         if style_prompt:
             char_count = len(style_prompt)
             st.caption(f"Characters: {char_count}/2000")
-            
+
             # Auto spell check
             corrected_prompt, spelling_issues = check_style_prompt(style_prompt)
             if corrected_prompt != style_prompt:
                 style_prompt = corrected_prompt
                 # Update the text area
                 st.session_state.auto_corrected_prompt = corrected_prompt
-            
+
             # Display spelling issues
             if spelling_issues:
                 spell_checker.display_spelling_issues(spelling_issues)
-        
+
         st.markdown("---")
-        
+
         # Advanced settings
         with st.expander("⚡ ADVANCED SETTINGS"):
             quality = st.selectbox(
@@ -376,14 +385,14 @@ def main():
                 index=0,
                 help="Higher quality = longer processing time"
             )
-            
+
             safety_level = st.selectbox(
                 "Safety Filter",
                 ["block_some", "block_most", "block_none"],
                 index=0,
                 help="Content safety filtering level"
             )
-            
+
             retry_attempts = st.slider(
                 "Retry Attempts",
                 min_value=1,
@@ -391,9 +400,9 @@ def main():
                 value=3,
                 help="Number of retry attempts on failure"
             )
-        
+
         st.markdown("---")
-        
+
         # Generate button
         generate_btn = st.button(
             "🚀 GENERATE TRANSFORMATION",
@@ -401,14 +410,14 @@ def main():
             use_container_width=True,
             disabled=st.session_state.processing
         )
-        
+
         # Reset button
         if st.button("🔄 RESET SESSION", use_container_width=True):
             SessionStateManager.reset()
             st.rerun()
-        
+
         st.markdown("---")
-        
+
         # Help section with spell checking help
         with st.expander("ℹ️ HELP & TIPS"):
             st.markdown("""
@@ -431,15 +440,15 @@ def main():
             - "watercolor painting with soft pastels"
             - "cyberpunk neon aesthetic at night"
             """)
-            
+
             # Add spelling help to help section
             display_spelling_help()
-        
+
         # System info
         with st.expander("🖥️ SYSTEM INFO"):
             agent_status = "✅ READY" if st.session_state.reactor_agent else "❌ OFFLINE"
             processor_status = "✅ READY" if st.session_state.image_processor else "❌ OFFLINE"
-            
+
             st.code(f"""
 NANozILLA v2.0 - 8BIT EDITION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -449,28 +458,30 @@ Errors: {st.session_state.error_count}
 Success: {st.session_state.success_count}
 Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             """)
-    
+
     # ========================================================================
     # MAIN CONTENT AREA
     # ========================================================================
-    
+
     display_pixel_divider()
 
     # Create two columns for before/after
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.markdown("### 📤 ORIGINAL IMAGE")
-        
+
         if uploaded_file and st.session_state.image_processor:
             try:
                 with st.spinner("🖼️ Processing uploaded image..."):
-                    image_bytes, format_info = st.session_state.image_processor.process_uploaded_image(uploaded_file)
-                    original_image = st.session_state.image_processor.prepare_for_display(image_bytes)
-                    
+                    image_bytes, format_info = st.session_state.image_processor.process_uploaded_image(
+                        uploaded_file)
+                    original_image = st.session_state.image_processor.prepare_for_display(
+                        image_bytes)
+
                     if original_image:
                         st.image(original_image, caption="Original Image", use_container_width=True)
-                        
+
                         # Display image info
                         info_box = f"""
                         <div class="status-box">
@@ -485,7 +496,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
                         </div>
                         """
                         st.markdown(info_box, unsafe_allow_html=True)
-                        
+
             except Exception as e:
                 st.error(f"❌ Error processing image: {str(e)}")
                 st.session_state.error_count += 1
@@ -496,31 +507,33 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             Please upload an image from the sidebar to begin your 
             AI-powered transformation journey!
             """)
-    
+
     with col2:
         st.markdown("### 🎨 GENERATED IMAGE")
-        
+
         if st.session_state.generated_image and st.session_state.image_processor:
             try:
                 generated_image = st.session_state.image_processor.prepare_for_display(
                     st.session_state.generated_image
                 )
-                
+
                 if generated_image:
                     st.image(generated_image, caption="AI Transformed", use_container_width=True)
-                    
+
                     # Download button
                     buf = io.BytesIO()
                     generated_image.save(buf, format="PNG")
-                    
+
                     st.download_button(
                         label="📥 DOWNLOAD TRANSFORMED IMAGE",
                         data=buf.getvalue(),
-                        file_name=f"nanozilla_{st.session_state.uploaded_file_name or 'output'}.png",
+                        file_name=(
+                            f"nanozilla_{st.session_state.uploaded_file_name or 'output'}.png"
+                        ),
                         mime="image/png",
                         use_container_width=True
                     )
-                    
+
                     # Display generation info
                     if st.session_state.generation_time:
                         info_box = f"""
@@ -533,7 +546,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
                         </div>
                         """
                         st.markdown(info_box, unsafe_allow_html=True)
-                        
+
             except Exception as e:
                 st.error(f"❌ Error displaying generated image: {str(e)}")
                 st.session_state.error_count += 1
@@ -544,7 +557,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             Your AI-transformed masterpiece will appear here after 
             you click the GENERATE button!
             """)
-    
+
     # ========================================================================
     # GENERATION LOGIC
     # ========================================================================
@@ -558,7 +571,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             """)
             st.session_state.error_count += 1
             return
-        
+
         if not style_prompt:
             st.error("""
             ⚠️ ERROR: No style prompt provided!
@@ -567,7 +580,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             """)
             st.session_state.error_count += 1
             return
-        
+
         # Validate prompt
         try:
             validate_prompt(style_prompt)
@@ -575,7 +588,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             st.error(f"⚠️ ERROR: {str(e)}")
             st.session_state.error_count += 1
             return
-        
+
         # Check if components are available
         if not st.session_state.reactor_agent:
             st.error("""
@@ -584,7 +597,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             Please check your API configuration and try again.
             """)
             return
-        
+
         if not st.session_state.image_processor:
             st.error("""
             ❌ CRITICAL: Image Processor not available!
@@ -592,28 +605,31 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             Please refresh the page and try again.
             """)
             return
-        
+
         # Set processing state
         st.session_state.processing = True
-        
+
         try:
             # Process image
             with st.spinner("📊 Processing image data..."):
-                image_bytes, image_info = st.session_state.image_processor.process_uploaded_image(uploaded_file)
+                image_bytes, image_info = st.session_state.image_processor.process_uploaded_image(
+                    uploaded_file)
                 time.sleep(0.5)  # Visual feedback
-            
+
             # Generate transformation
-            progress_text = "🔄 NANozILLA Reactor Agent is transforming your image..."
-            
+                progress_text = (
+                    "🔄 NANozILLA Reactor Agent is transforming your image..."
+                )
+
             with st.spinner(progress_text):
                 start_time = time.time()
-                
+
                 # Show progress bar
                 progress_bar = st.progress(0)
                 for i in range(100):
                     time.sleep(0.01)  # Faster progress for better UX
                     progress_bar.progress(i + 1)
-                
+
                 # Execute colorization
                 generated_bytes = st.session_state.reactor_agent.execute_colorization(
                     image_bytes=image_bytes,
@@ -622,16 +638,16 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
                     safety_level=safety_level,
                     retry_attempts=retry_attempts
                 )
-                
+
                 end_time = time.time()
                 generation_time = f"{end_time - start_time:.2f}s"
-            
+
             # Store results
             st.session_state.generated_image = generated_bytes
             st.session_state.generation_time = generation_time
             st.session_state.success_count += 1
             st.session_state.processing = False
-            
+
             # Success message
             success_msg = f"""
             <div class="status-box">
@@ -643,17 +659,17 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             </div>
             """
             st.markdown(success_msg, unsafe_allow_html=True)
-            
+
             # Auto-scroll to result
             st.balloons()
             time.sleep(1)
             st.rerun()
-            
+
         except Exception as e:
             st.session_state.processing = False
             st.session_state.error_count += 1
             st.session_state.last_error = str(e)
-            
+
             st.error(f"""
             ❌ TRANSFORMATION FAILED!
             
@@ -665,15 +681,15 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
             • Verify the image format
             • Wait a moment and try again
             """)
-            
+
             with st.expander("🔍 Technical Details"):
                 st.code(traceback.format_exc())
-    
+
     # ========================================================================
     # FOOTER
     # ========================================================================
     display_pixel_divider()
-    
+
     footer_html = """
     <div class="status-box" style="text-align: center;">
     ╔════════════════════════════════════════════════════════════════╗
@@ -684,6 +700,7 @@ Status: {'🔄 PROCESSING' if st.session_state.processing else '✅ READY'}
     </div>
     """
     st.markdown(footer_html, unsafe_allow_html=True)
+
 
 # ============================================================================
 # APPLICATION ENTRY POINT
@@ -698,10 +715,10 @@ if __name__ == "__main__":
         The NANozILLA reactor has encountered a critical error.
         Please try refreshing the page.
         """)
-        
+
         with st.expander("🚑 Emergency Technical Details"):
             st.code(traceback.format_exc())
-        
+
         if st.button("🔄 EMERGENCY RESTART"):
             st.session_state.clear()
             st.rerun()
